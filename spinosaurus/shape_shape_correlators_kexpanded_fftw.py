@@ -683,20 +683,30 @@ class KEShapeShapeCorrelators(KEDensityShapeCorrelators):
                 
         return pktable
         
-    def combine_bias_terms_shape_shape(self, m, shape_bvec1, shape_bvec2, Pshot=0):
-    
+    def combine_bias_terms_shape_shape(self, m, shape_bvec1, shape_bvec2, Pshot=0, sn21=0, sn22=0):
+
         '''
-        Compute the galaxy density x shape cross spectrum.
+        Compute the galaxy shape x shape cross spectrum.
         
         The counterterm treatment is a bit ad-hoc, but we're just trying to be a bit symmetric in the inputs (really the cross counterterm is its own thing).
-        
-        Note that there is no shot noise term.
+
+        Inputs:
+            -m: helicity of the component spectrum to be computed
+            -shape_bvec1: shape bias parameters of sample 1
+            -shape_bvec2: shape bias parameters of sample 2
+            -Pshot: constant shape noise amplitude, if auto-spectrum
+            -sn21: first k2-dependent shot noise contribution, if auto-spectrum
+            -sn22: second k2-dependent shot noise contribution, if auto-spectrum
+
+        Outputs:
+            -k: k scales at which LPT predictions have been computed
+            -Pk: bias polynomial combination of parameters times basis spectra 
         
         '''
-    
+
         c_s, c_ds, c_s2, c_L2, c_3, c_dt, alpha_s1 = shape_bvec1
         b_s, b_ds, b_s2, b_L2, b_3, b_dt, alpha_s2 = shape_bvec2
-        
+
         # The table is listed in order (s_ab, Ocd), (delta sab, Ocd), (s^2_ab, Ocd)
         bias_poly = np.array([c_s * b_s, c_s * b_ds + b_s * c_ds, c_s * b_s2 + b_s * c_s2, c_s * b_L2 + b_s * c_L2,\
                               c_ds * b_ds, c_ds * b_s2 + c_s2 * b_ds, c_ds * b_L2 + c_L2 * b_ds,\
@@ -704,9 +714,22 @@ class KEShapeShapeCorrelators(KEDensityShapeCorrelators):
                               c_L2 * b_L2,\
                               c_s * b_3 + c_3 * b_s, c_s * b_dt + c_dt * b_s,\
                               alpha_s1 + alpha_s2])
-                
-        pktable = self.pktables_gg[m]
-        
-        return pktable[:,0], np.sum(bias_poly[None,:] * pktable[:,1:], axis = 1) + 2*Pshot
 
+        pktable = self.pktables_gg[m]
+
+
+        shot_term = 0
+
+        #All m's have a constant noise term.
+        #2 scale-dependent parameters for three noise contributions
+        if shape_bvec1 == shape_bvec2:
+            shot_term = 2 * Pshot
+            if m == 0:
+                shot_term += pktable[:,0]**2 * sn21
+            if m == 1:
+                shot_term += pktable[:,0]**2 * (sn21 + sn22)
+            if m == 2:
+                shot_term += pktable[:,0]**2 * (sn21 + 4*sn22)
+
+        return pktable[:,0], np.sum(bias_poly[None,:] * pktable[:,1:], axis = 1) + shot_term
 

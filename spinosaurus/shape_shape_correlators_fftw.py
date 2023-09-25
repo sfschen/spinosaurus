@@ -483,14 +483,24 @@ class ShapeShapeCorrelators(DensityShapeCorrelators):
                 
         return pktable
         
-    def combine_bias_terms_shape_shape(self, m, shape_bvec1, shape_bvec2, Pshot=0):
+    def combine_bias_terms_shape_shape(self, m, shape_bvec1, shape_bvec2, Pshot=0, sn21=0, sn22=0):
     
         '''
-        Compute the galaxy density x shape cross spectrum.
+        Compute the galaxy shape x shape cross spectrum.
         
         The counterterm treatment is a bit ad-hoc, but we're just trying to be a bit symmetric in the inputs (really the cross counterterm is its own thing).
-        
-        Note that there is no shot noise term.
+
+        Inputs:
+            -m: helicity of the component spectrum to be computed
+            -shape_bvec1: shape bias parameters of sample 1
+            -shape_bvec2: shape bias parameters of sample 2
+            -Pshot: constant shape noise amplitude, if auto-spectrum
+            -sn21: first k2-dependent shot noise contribution, if auto-spectrum
+            -sn22: second k2-dependent shot noise contribution, if auto-spectrum
+
+        Outputs:
+            -k: k scales at which LPT predictions have been computed
+            -Pk: bias polynomial combination of parameters times basis spectra 
         
         '''
     
@@ -507,6 +517,20 @@ class ShapeShapeCorrelators(DensityShapeCorrelators):
                 
         pktable = self.pktables_gg[m]
         
-        return pktable[:,0], np.sum(bias_poly[None,:] * pktable[:,1:], axis = 1) + 2 * Pshot # all the helicity spectra have the same shot noise
+
+        shot_term = 0
+        
+        #All m's have a constant noise term.
+        #2 scale-dependent parameters for three noise contributions
+        if shape_bvec1 == shape_bvec2:
+            shot_term = 2 * Pshot
+            if m == 0:
+                shot_term += pktable[:,0]**2 * sn21
+            if m == 1:
+                shot_term += pktable[:,0]**2 * (sn21 + sn22)
+            if m == 2:
+                shot_term += pktable[:,0]**2 * (sn21 + 4*sn22)
+        
+        return pktable[:,0], np.sum(bias_poly[None,:] * pktable[:,1:], axis = 1) + shot_term
 
 

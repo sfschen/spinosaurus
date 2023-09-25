@@ -247,16 +247,28 @@ class DensityShapeCorrelators(CLEFT):
         return self.pktable_gd
         
 
-    def combine_bias_terms_density_shape(self, density_bvec, shape_bvec):
+    def combine_bias_terms_density_shape(self, density_bvec, shape_bvec, Pnoise=0):
     
         '''
         Compute the galaxy density x shape cross spectrum.
-        
-        The counterterm treatment is a bit ad-hoc, but we're just trying to be a bit symmetric in the inputs (really the cross counterterm is its own thing).
-        
+         
         Note that there is no shot noise term.
+         
+        The counterterm treatment is a bit ad-hoc, but we're just trying to be a bit symmetric in the inputs (really the cross counterterm is its own thing).
+
+        Inputs:
+            -density_bvec: scalar bias parameters of sample
+            -shape_bvec: shape bias parameters of sample 
+            -Pshot: constant shape noise amplitude, if auto-spectrum
+            -sn21: first k2-dependent shot noise contribution, if auto-spectrum
+            -sn22: second k2-dependent shot noise contribution, if auto-spectrum
+
+        Outputs:
+            -k: k scales at which LPT predictions have been computed
+            -Pk: bias polynomial combination of parameters times basis spectra 
         
         '''
+
     
         b1, b2, bs, b3, alpha_d = density_bvec; b2 *= 0.5 # we use the 1/2 b2 delta^2 convention for some reason
         c_s, c_ds, c_s2, c_L2, c_3, c_dt, alpha_s = shape_bvec
@@ -267,6 +279,7 @@ class DensityShapeCorrelators(CLEFT):
                               b2 * c_s, b2 * c_ds, b2 * c_s2, b2 * c_L2,\
                               bs * c_s, bs * c_ds, bs * c_s2, bs * c_L2,\
                               c_3, b1 * c_3 + b3 * c_s, c_dt, b1 * c_dt, alpha_d + alpha_s])
-                              
-        return self.pktable_gd[:,0], np.sum(bias_poly[None,:] * self.pktable_gd[:,1:], axis = 1)
+        # If shape x density for same sample, there may be scale-dependent noise (see section 3.4)
+        noiseterm = self.pktable_gd[:,0]**2 * Pnoise 
+        return self.pktable_gd[:,0], np.sum(bias_poly[None,:] * self.pktable_gd[:,1:], axis = 1) + noiseterm
     
