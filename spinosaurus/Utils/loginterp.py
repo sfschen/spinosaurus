@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.interpolate import InterpolatedUnivariateSpline as interpolate
-from scipy.misc import derivative
+#from scipy.misc import derivative
+from findiff import Diff
 import inspect
 
 def loginterp(x, y, yint = None, side = "both", lorder = 9, rorder = 9, lp = 1, rp = -2,
@@ -33,8 +34,12 @@ def loginterp(x, y, yint = None, side = "both", lorder = 9, rorder = 9, lp = 1, 
     else:
         r = rp - 2
     
-    lneff = derivative(yint, x[l], dx = x[l]*ldx, order = lorder)*x[l]/y[l]
-    rneff = derivative(yint, x[r], dx = x[r]*rdx, order = rorder)*x[r]/y[r]
+#    lneff = derivative(yint, x[l], dx = x[l]*ldx, order = lorder)*x[l]/y[l]
+#    rneff = derivative(yint, x[r], dx = x[r]*rdx, order = rorder)*x[r]/y[r]
+    d_ldx = Diff(0,x[l]*ldx,acc=lorder+1)
+    d_rdx = Diff(0,x[r]*rdx,acc=rorder+1)
+    lneff = d_ldx(yint(x))[l]*x[l]/y[l]
+    rneff = d_rdx(yint(x))[r]*x[r]/y[r]    
     
     #print(lneff, rneff)
     
