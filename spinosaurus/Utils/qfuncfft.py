@@ -409,7 +409,7 @@ class QFuncFFT:
         # 1-loop <Delta s L2> correlators
         self.xi5_sL2D  = -20./63 * self.xi_l_n(5, 0, self.Qs3 - self.R3L2)
         self.xi3A_sL2D = -2./15 * self.xi_l_n(3, 0,  3*self.Qs1 - self.Qs3 +  3*self.R1L2 + self.R3L2)
-        self.xi3B_sL2D = 4./45  * self.xi_l_n(3, 0,  9*self.Qs1 + 2*self.Qs2 + 9*self.R1L2 - 2*self.R3L2)
+        self.xi3B_sL2D = 4./45  * self.xi_l_n(3, 0,  9*self.Qs1 + 2*self.Qs3 + 9*self.R1L2 - 2*self.R3L2)
         self.xi1A_sL2D = -1./105 * self.xi_l_n(1, 0, 14*self.Qs1 - 3*self.Qs3 + 14*self.R1L2 + 3*self.R3L2)
         self.xi1B_sL2D = 4./35 * self.xi_l_n(1, 0, 7*self.Qs1 + self.Qs3 + 7*self.R1L2 - self.R3L2)
         
