@@ -226,10 +226,10 @@ class KEDensityShapeCorrelators(KECLEFT):
             bias_integrands[1,:] = 2*self.xi1m1_2ds*mu1fac - self.xi3m1_2ds*P3fac
             
             # (1, s^2_{ij})
-            bias_integrands[2,:] = 2*self.xi3m1_2s2*mu1fac - self.xi1m1_2s2*P3fac
+            bias_integrands[2,:] = 2*self.xi1m1_2s2*mu1fac - self.xi3m1_2s2*P3fac
             
             # (1, L2_{ij})
-            bias_integrands[3,:] = 2*self.xi3m1_2L2*mu1fac - self.xi1m1_2L2*P3fac
+            bias_integrands[3,:] = 2*self.xi1m1_2L2*mu1fac - self.xi3m1_2L2*P3fac
                                   
             # (delta, sij)
             #bias_integrands[4,:] = -2./3*P2fac * self.J1 - ksq * self.Ulin * ( (self.J2 + 2*self.J3) * mu2fac + self.J4 * mu4fac )\

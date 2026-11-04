@@ -161,10 +161,10 @@ class DensityShapeCorrelators(CLEFT):
             bias_integrands[2,:] = -ksq * ( self.J3**2 + \
                                             (self.J2**2 + 4*self.J2*self.J3 + 3*self.J3**2 + 2*self.J3*self.J4) * mu2fac + \
                                             (2*self.J2*self.J4 + 2*self.J3*self.J4 + self.J4**2) * mu4fac - 1./6 * (self.Xs2 + mu2fac*self.Ys2) )\
-                                  + k * (2*self.xi3m1_2s2*mu1fac - self.xi1m1_2s2*P3fac)
+                                  + k * (2*self.xi1m1_2s2*mu1fac - self.xi3m1_2s2*P3fac)
             
             # (1, L2_{ij})
-            bias_integrands[3,:] = k * (2*self.xi3m1_2L2*mu1fac - self.xi1m1_2L2*P3fac) \
+            bias_integrands[3,:] = k * (2*self.xi1m1_2L2*mu1fac - self.xi3m1_2L2*P3fac) \
                                      - 0.5 * ksq * (self.xi4_L2DD*P4fac + (-2*self.xi2A_L2DD+self.xi2B_L2DD)*P2fac -2*self.xi0_L2DD)
                                   
             # (delta, sij)
